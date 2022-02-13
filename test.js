@@ -242,15 +242,35 @@ const data = JSON.parse(`
   }
 ]`)
 
-$('table').append(`
-  <tbody>${data.map(n => `
-    <tr>
-      <td>${n.id}</td>
-      <td>${n.parentId}</td>
-      <td>${n.isActive}</td>
-      <td>${n.balance}</td>
-      <td>${n.name}</td>
-      <td>${n.email}</td>
-    </tr>`).join('')}
-  </tbody>
-`);
+
+data.forEach(function(item){
+  item.children = []
+  for (i = 0; i < data.length; i++){
+    if (data[i].parentId === item.id)
+    item.children.push(data[i])
+  }
+})
+
+
+function getElement(item){
+  $('table').append(`
+      <tr>
+        <td>${item.id}</td>
+        <td>${item.parentId}</td>
+        <td>${item.isActive}</td>
+        <td>${item.balance}</td>
+        <td>${item.name}</td>
+        <td>${item.email}</td>
+      </tr>`);
+  for (i of item.children){
+    getElement(i);
+  }
+}
+
+
+var arr = []
+data.forEach(element => arr.push(element.id))
+
+data
+  .filter((item) => !arr.includes(item.parentId))
+  .forEach((item) => getElement(item));
