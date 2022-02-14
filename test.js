@@ -251,21 +251,54 @@ data.forEach(function(item){
   }
 })
 
-
+//Вариант 1
 function getElement(item){
   $('table').append(`
-      <tr>
+      <tr${item.children.length === 0 ? '' : ' class="hasChildren"'}>
         <td>${item.id}</td>
         <td>${item.parentId}</td>
         <td>${item.isActive}</td>
         <td>${item.balance}</td>
         <td>${item.name}</td>
         <td>${item.email}</td>
-      </tr>`);
+      </tr$>`);
   for (i of item.children){
     getElement(i);
   }
 }
+
+// function getElement(item){
+//   if (item.children == []){
+//     $('table').append(
+//       '<tr><td>' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
+//     );
+//   }
+//   else {
+//     $('table').append(
+//       '<tr class = "hasChildren"><td>' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
+//     );
+//     for (i of item.children){
+//       getElement(i);
+//     }
+//   }
+// }
+
+//Вариант 2 - как добавить стили??
+/*function getElement(item){
+  if (item.children == []){
+    $('table').append(
+      '<tr><td class="simple">' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
+    );
+  }
+  else {
+    $('table').append(
+      '<tr class = "hasChildren"><td>' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
+    );
+    for (i of item.children){
+      getElement(i);
+    }
+  }
+}*/
 
 
 var arr = []

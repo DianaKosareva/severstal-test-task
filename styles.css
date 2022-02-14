@@ -27,3 +27,7 @@ body {
 td {
     background-color: white;
 }
+
+tr.hasChildren td {
+    color: #c31313
+}
