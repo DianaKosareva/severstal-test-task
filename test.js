@@ -246,64 +246,82 @@ const data = JSON.parse(`
 data.forEach(function(item){
   item.children = []
   for (i = 0; i < data.length; i++){
-    if (data[i].parentId === item.id)
-    item.children.push(data[i])
+    if (data[i].parentId === item.id) {
+      item.children.push(data[i])
+      data[i].parent = item
+      item.expanded = false
+    }
   }
 })
 
-//Вариант 1
-function getElement(item){
-  $('table').append(`
-      <tr${item.children.length === 0 ? '' : ' class="hasChildren"'}>
+function hide(element) {
+  element.dom.hide()
+
+  if (element.children.length !== 0) {
+    element.expanded = false
+    element.children.forEach(child => hide(child))
+  }
+}
+
+function getElement(item, show = true){
+  const tr = $(`<tr>
         <td>${item.id}</td>
         <td>${item.parentId}</td>
         <td>${item.isActive}</td>
         <td>${item.balance}</td>
         <td>${item.name}</td>
         <td>${item.email}</td>
-      </tr$>`);
-  for (i of item.children){
-    getElement(i);
+      </tr>`)
+  item.dom = tr
+
+  if (!show)
+    tr.hide()
+
+  if (item.children.length !== 0) {
+    tr.addClass('hasChildren')
+    tr.click(function () {
+      item.expanded = !item.expanded
+      let children = activeFilter ? item.children.filter(child => child.isActive) : item.children
+      if (item.expanded) {
+        children.forEach(child => child.dom.show())
+      } else {
+        children.forEach(child => hide(child))
+      }
+    })
+  }
+
+  $('table').append(tr);
+
+  for (i of item.children) {
+    getElement(i, item.expanded);
   }
 }
-
-// function getElement(item){
-//   if (item.children == []){
-//     $('table').append(
-//       '<tr><td>' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
-//     );
-//   }
-//   else {
-//     $('table').append(
-//       '<tr class = "hasChildren"><td>' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
-//     );
-//     for (i of item.children){
-//       getElement(i);
-//     }
-//   }
-// }
-
-//Вариант 2 - как добавить стили??
-/*function getElement(item){
-  if (item.children == []){
-    $('table').append(
-      '<tr><td class="simple">' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
-    );
-  }
-  else {
-    $('table').append(
-      '<tr class = "hasChildren"><td>' + item.id + '</td><td>' + item.parentId + '</td><td>' + item.isActive + '</td><td>'  + item.balance + '</td><td>'  + item.name + '</td><td>'  + item.email + '</td></tr>'
-    );
-    for (i of item.children){
-      getElement(i);
-    }
-  }
-}*/
-
 
 var arr = []
 data.forEach(element => arr.push(element.id))
 
+let activeFilter = false
+
 data
-  .filter((item) => !arr.includes(item.parentId))
-  .forEach((item) => getElement(item));
+  .filter(item => !arr.includes(item.parentId))
+  .forEach(item => getElement(item))
+
+$('#activeFilter').change(function () {
+  activeFilter = this.checked
+  if (this.checked) {
+    data
+      .filter(item => !item.isActive)
+      .forEach(item => hide(item))
+    
+    data
+      .filter(item => item.children.filter(child => child.isActive).length === 0)
+      .forEach(item => item.dom.removeClass("hasChildren"))
+  } else {
+    data
+      .filter(item => !item.isActive && (!arr.includes(item.parentId) || item.parent !== undefined && item.parent.expanded))
+      .forEach(item => item.dom.show())
+    data
+      .filter(item => item.children.length !== 0)
+      .forEach(item => item.dom.addClass("hasChildren"))
+  }
+})

@@ -9,7 +9,6 @@ body {
     font-size: 16px;
     font-weight: normal;
     font-family: 'Roboto', sans-serif;
-    /* display: block; */
     text-align: center;
 }
 
@@ -20,8 +19,7 @@ body {
 }
 
 .table {
-    width: 100%;
-    /* border: 2px solid #0f141e; */
+    width: 100%
 }
 
 td {
